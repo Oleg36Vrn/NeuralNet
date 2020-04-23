@@ -12,12 +12,12 @@ as.numeric(warpbreaks$wool)
 as.numeric(warpbreaks$tension)
 som.warpbreaks <- som(scale(warpbreaks), grid = somgrid(5, 5, 'hexagonal'))
 warpbreaks$wool<- as.numeric(warpbreaks$wool)
-warpbreaks$tension<- as.numeric(warpbreaks$tension)#РџСЂРµРѕР±СЂР°Р·РѕРІР°Р»Рё С„Р°РєС‚РѕСЂС‹ РІ С‡РёСЃР»Р°
+warpbreaks$tension<- as.numeric(warpbreaks$tension)#Преобразование в числовой вектор
 som.warpbreaks <- som(scale(warpbreaks), grid = somgrid(5, 5, 'hexagonal'))
 som.warpbreaks
 dim(getCodes(som.warpbreaks))
 plot(som.warpbreaks, main = 'Warpbreaks data Kohonen SOM')
-graphics.off()#РЎС‚С‘СЂР»Рё РіСЂР°С„РёРє
+graphics.off()#Очистка графика
 par(mfrow = c(1,1))
 plot(som.warpbreaks, type = 'changes', main = 'Warpbreaks data SOM')
 train <- sample(nrow(warpbreaks), 40)
