@@ -12,8 +12,10 @@ install_keras()
 # Делаем откат до одной из предыдущих версий: 1.12
 tensorflow::install_tensorflow(version = '1.12')
 
-# Установим число признаков, по которым ищется разбиение
+# Установим число признаков, по которым ищется разбиение, макс. длину и кол-во партий датасета
 max_features <- 10000
+maxlen <- 500
+batch_size <- 32
 
 # Загружаем данные
 mnist <- dataset_mnist()
@@ -39,6 +41,14 @@ input_test <- input_test/255
 str(input_test) #Смотрим на изменённую выборку
 
 #####
+# Добавляем число шагов обучения 
+input_train <- pad_sequences(input_train, maxlen = maxlen)
+input_test <- pad_sequences(input_test, maxlen = maxlen)
+60000*500
+dim(input_train)
+dim(input_test)
+
+#####
 # Переходим к тренировке рекуррентной сети
 model <- keras_model_sequential() %>%
   layer_embedding(input_dim = max_features, output_dim = 32) %>%
@@ -59,5 +69,3 @@ history <- model %>% fit(
 
 # Вывод графика-результата
 plot(history)
-
-
