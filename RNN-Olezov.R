@@ -27,10 +27,16 @@ y_test <- mnist$test$y
 
 #####
 # Меняем размерность тренировочной выборки
-train_images <- array_reshape(input_train, c(60000, 28*28))
+input_train <- array_reshape(input_train, c(60000, 28*28))
 # Меняем область значений
-train_images <- input_train/255
-str(train_images) #Смотрим на изменённую выборку
+input_train <- input_train/255
+str(input_train) #Смотрим на изменённую выборку
+
+# Меняем размерность тестовой выборки:
+input_test <- array_reshape(input_test, c(10000, 28*28))
+# Меняем область значений:
+input_test <- input_test/255
+str(input_test) #Смотрим на изменённую выборку
 
 #####
 # Переходим к тренировке рекуррентной сети
