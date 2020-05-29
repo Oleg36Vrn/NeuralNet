@@ -36,6 +36,9 @@ myts <-  myts[complete.cases(myts), ]
 myts <-  myts[-seq(nrow(myts) - 1200), ]
 myts$index <-  seq(nrow(myts))
 
+# Вывод на экран графика - Цена закрытия индекса S&P 500 (^GSPC) за рассматриваемый период
+plot_ly(myts, x = ~index, y = ~price, type = "scatter", mode = "markers", color = ~vol)
+
 # Стандартизация данных методом min-max
 myts <- data.frame(index = rminimax(myts$index), price = rminimax(myts$price), vol= rminimax(myts$vol))
 myts
@@ -158,3 +161,28 @@ sm %>% compile(
   loss = 'mse')
 sm %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
 SM_Mse_Rmsprop_1 <- 0.3236 # величина ошибки SM-модели при ф-ции потерь Mse и оптимизаторе Rmsprop
+
+### LSTM-модель ###
+### По сравнению с SM моделью изменения начинаются с этапа стандартизации данных
+
+# Стандартизация данных посредством z-оценки
+msd.price <-  c(mean(myts$price), sd(myts$price))
+msd.vol <-  c(mean(myts$vol), sd(myts$vol))
+myts$price <-  (myts$price - msd.price[1])/msd.price[2]
+myts$vol <-  (myts$vol - msd.vol[1])/msd.vol[2]
+summary(myts)
+
+# Деление выборки на тренировочную и тестовую (1000 - тренировочная, 200 - тестовая)
+datalags = 20
+train <-  myts[seq(1000 + datalags), ]
+test <-  myts[1000 + datalags + seq(200 + datalags), ]
+batch.size <- 50
+
+# Создание массивов для последующей работы с ними
+# Тренировочная выборка 
+x.train <-  array(data = lag(cbind(train$price, train$vol), datalags)[-(1:datalags), ], dim = c(nrow(train) - datalags, datalags, 2))
+y.train = array(data = train$price[-(1:datalags)], dim = c(nrow(train)-datalags, 1))
+# Тестовая выборка
+x.test <-  array(data = lag(cbind(test$vol, test$price), datalags)[-(1:datalags), ], dim = c(nrow(test) - datalags, datalags, 2))
+y.test <-  array(data = test$price[-(1:datalags)], dim = c(nrow(test) - datalags, 1))
+
