@@ -163,7 +163,7 @@ sm %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
 SM_Mse_Rmsprop_1 <- 0.3236 # величина ошибки SM-модели при ф-ции потерь Mse и оптимизаторе Rmsprop
 
 ### LSTM-модель ###
-### По сравнению с SM моделью изменения начинаются с этапа стандартизации данных
+### По сравнению с SM-моделью изменения начинаются с этапа стандартизации данных
 
 # Стандартизация данных посредством z-оценки
 msd.price <-  c(mean(myts$price), sd(myts$price))
@@ -185,4 +185,3 @@ y.train = array(data = train$price[-(1:datalags)], dim = c(nrow(train)-datalags,
 # Тестовая выборка
 x.test <-  array(data = lag(cbind(test$vol, test$price), datalags)[-(1:datalags), ], dim = c(nrow(test) - datalags, datalags, 2))
 y.test <-  array(data = test$price[-(1:datalags)], dim = c(nrow(test) - datalags, 1))
-
