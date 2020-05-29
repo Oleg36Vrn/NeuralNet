@@ -77,7 +77,7 @@ sm %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
 # Получаем ответ
 SM_Mae_Adam <- 0.2493 # величина ошибки SM-модели при ф-ции потерь Mae и оптимизаторе Adam
 
-# Далее будем повторять алгоритм для остальных вариаций SM модели
+# Далее будем повторять алгоритм для остальных вариаций SM-модели
 
 ### Mae_Rmsprop ###
 sm %>% compile(
@@ -176,7 +176,7 @@ summary(myts)
 datalags = 20
 train <-  myts[seq(1000 + datalags), ]
 test <-  myts[1000 + datalags + seq(200 + datalags), ]
-batch.size <- 50
+batch.size <- 125
 
 # Создание массивов для последующей работы с ними
 # Тренировочная выборка 
@@ -185,3 +185,67 @@ y.train = array(data = train$price[-(1:datalags)], dim = c(nrow(train)-datalags,
 # Тестовая выборка
 x.test <-  array(data = lag(cbind(test$vol, test$price), datalags)[-(1:datalags), ], dim = c(nrow(test) - datalags, datalags, 2))
 y.test <-  array(data = test$price[-(1:datalags)], dim = c(nrow(test) - datalags, 1))
+
+# Создание архитектуры нейронной сети 
+# Двухслойная LSTM-модель
+model <- keras_model_sequential()  %>%
+  layer_lstm(units = 100,
+             input_shape = c(datalags, 2),
+             batch_size = batch.size,
+             return_sequences = TRUE,
+             stateful = TRUE) %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_lstm(units = 50,
+             return_sequences = FALSE,
+             stateful = TRUE) %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 1)
+
+# Добавляем оптимизатор и функцию потерь для нейронной сети. Точность не имеет смысла выводить на экран, т.к. она стремится к 0
+### Mae_Adam ###
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'mae')
+
+# Обучаем нейронную сеть
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+
+# Получаем ответ
+LSTM_Mae_Adam <- 0.4300 # величина ошибки LSTM-модели при ф-ции потерь Mae и оптимизаторе Adam
+
+# Далее будем повторять алгоритм для остальных вариаций LSTM-модели
+
+### Mae_Rmsprop ###
+model %>% compile(
+  optimizer = 'rmsprop',
+  loss = 'mae')
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+LSTM_Mae_Rmsprop <- 0.3693 # величина ошибки LSTM-модели при ф-ции потерь Mae и оптимизаторе Rmsprop
+
+### Mape_Adam ###
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'mape')
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+LSTM_Mape_Adam <- 98.8686 # величина ошибки LSTM-модели при ф-ции потерь Mape и оптимизаторе Adam
+
+### Mape_Rmsprop ###
+model %>% compile(
+  optimizer = 'rmsprop',
+  loss = 'mape')
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+LSTM_Mape_Rmsprop <- 102.1346 # величина ошибки LSTM-модели при ф-ции потерь Mape и оптимизаторе Rmsprop
+
+### Mse_Adam ###
+model %>% compile(
+  optimizer = 'adam',
+  loss = 'mse')
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+LSTM_Mse_Adam <- 0.2044 # величина ошибки LSTM-модели при ф-ции потерь Mse и оптимизаторе Adam
+
+### Mse_Rmsprop ###
+model %>% compile(
+  optimizer = 'rmsprop',
+  loss = 'mse')
+model %>% fit(x.train, y.train, epochs = 10, batch_size = 125)
+LSTM_Mse_Rmsprop <- 0.1612 # величина ошибки LSTM-модели при ф-ции потерь Mse и оптимизаторе Rmsprop
