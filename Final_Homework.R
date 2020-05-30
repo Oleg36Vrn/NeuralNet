@@ -18,7 +18,7 @@ library('tensorflow')
 library('minimax')
 
 # Задание values - Индекс S&P 500 (^GSPC) в период 25.06.15 - 29.05.20  
-tickers <- c('%%5EGSPC')
+tickers <- c('%5EGSPC')
 first.date <- Sys.Date() - 360*5
 last.date <- Sys.Date()
 
